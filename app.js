@@ -2,16 +2,19 @@ const fs = require('fs')
 const Koa = require('koa')
 const Router = require('koa-router')
 const bodyParser = require('koa-bodyparser')
+
+// 数据库
 const { connect, schemas } = require('./database')
 
-let user = require('./api/User')
+// API
+const user = require('./api/User')
 
 const app = new Koa()
 const router = new Router()
 
-app.use(bodyParser())
 app.use(router.routes())
 app.use(router.allowedMethods())
+app.use(bodyParser())
 
 router.use('/user', user.routes())
 

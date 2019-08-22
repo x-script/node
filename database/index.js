@@ -1,14 +1,14 @@
 const { resolve } = require('path')
-const glob = require('glob')
 const mongoose = require('mongoose')
+const glob = require('glob')
 
 const db = 'mongodb://localhost/test-db'
 
-exports.schemas = () => {
+const schemas = () => {
   glob.sync(resolve(__dirname, './schema', '**/*.js')).forEach(require)
 }
 
-exports.connect = () => {
+const connect = () => {
   let maxConnectCount = 0
 
   mongoose.connect(db, {
@@ -28,7 +28,7 @@ exports.connect = () => {
         })    
       } else {
         reject()
-        throw new Error('数据库出现问题，程序无法搞定，请人为修理......')
+        throw new Error('数据库重连失败！')
       }
     })
 
@@ -43,13 +43,19 @@ exports.connect = () => {
         })   
       } else {
         reject(error)
-        throw new Error('数据库出现问题，程序无法搞定，请人为修理......')
+        throw new Error('数据库重连失败！')
       }
     })
 
     mongoose.connection.once('open', () => {
-      console.log('MongoDB connected successfully') 
+      console.log('MongoDB connected successfully')
+      
       resolve()   
     })
   })
+}
+
+module.exports = {
+  connect,
+  schemas
 }
